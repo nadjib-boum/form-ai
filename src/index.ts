@@ -1,23 +1,21 @@
-import express, { Application, Request, Response } from 'express';
-import userService from '@/services/user';
+import express, { type Application } from 'express';
+import dotenv from 'dotenv';
+import router from './controllers';
+import errorHandler from './handlers/error';
+
+dotenv.config();
+
+import './config/db';
 
 const app: Application = express();
-const PORT: number = 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(`/api`, router);
+app.use(errorHandler);
 
-app.get('/user/:name', (req: Request, res: Response) => {
 
-  const name = req.params.name;
-  const user = userService.getUser(name);
-
-  res.send({
-    success: true,
-    data: {
-      user
-    }
-  });
-});
+const PORT: number = +(process.env.PORT!) || 8000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
